@@ -50,6 +50,8 @@
     ]
   },
   "dependencies": {
+    "aws-amplify": "^0.4.0",
+    "aws-amplify-react": "^0.1.46",
     "codemirror": "^5.26.0",
     "codemirror-graphql": "^0.6.11",
     "markdown-it": "^8.4.0"
