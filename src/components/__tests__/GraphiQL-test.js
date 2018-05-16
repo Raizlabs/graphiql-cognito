@@ -70,49 +70,10 @@ Object.defineProperty(window, 'localStorage', {
 describe('GraphiQL', () => {
   const noOpFetcher = () => {};
 
-  it('should throw error without fetcher', () => {
-    expect(() => ReactTestRenderer.create(<GraphiQL />)).to.throw(
-      'GraphiQL requires a fetcher function',
-    );
-  });
-
   it('should construct correctly with fetcher', () => {
     expect(() =>
       ReactTestRenderer.create(<GraphiQL fetcher={noOpFetcher} />),
     ).to.not.throw();
-  });
-
-  it('should refetch schema with new fetcher', async () => {
-    let firstCalled = false;
-    function firstFetcher() {
-      firstCalled = true;
-      return Promise.resolve(simpleIntrospection);
-    }
-
-    let secondCalled = false;
-    function secondFetcher() {
-      secondCalled = true;
-      return Promise.resolve(simpleIntrospection);
-    }
-
-    // Initial render calls fetcher
-    const instance = ReactTestRenderer.create(
-      <GraphiQL fetcher={firstFetcher} />,
-    );
-    expect(firstCalled).to.equal(true);
-
-    await wait();
-
-    // Re-render does not call fetcher again
-    firstCalled = false;
-    instance.update(<GraphiQL fetcher={firstFetcher} />);
-    expect(firstCalled).to.equal(false);
-
-    await wait();
-
-    // Re-render with new fetcher is called.
-    instance.update(<GraphiQL fetcher={secondFetcher} />);
-    expect(secondCalled).to.equal(true);
   });
 
   it('should not throw error if schema missing and query provided', () => {

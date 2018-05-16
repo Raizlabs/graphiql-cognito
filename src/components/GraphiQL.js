@@ -34,7 +34,7 @@ import {
   introspectionQuerySansSubscriptions,
 } from '../utility/introspectionQueries';
 
-import fetcher from '../utility/graphQLFetcher';
+import { fetcher } from '../utility/graphQLFetcher';
 
 import { Auth } from 'aws-amplify';
 
@@ -142,12 +142,6 @@ export class GraphiQL extends React.Component {
     this.codeMirrorSizer = new CodeMirrorSizer();
 
     global.g = this;
-
-    (async () => {
-      const session = await Auth.currentSession();
-      const token = session.idToken.jwtToken;
-      console.log(token);
-    })();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -469,7 +463,6 @@ export class GraphiQL extends React.Component {
   // Private methods
 
   _fetchSchema() {
-    debugger;
     const fetch = observableToPromise(fetcher({ query: introspectionQuery }));
     if (!isPromise(fetch)) {
       this.setState({
@@ -477,7 +470,6 @@ export class GraphiQL extends React.Component {
       });
       return;
     }
-
     fetch
       .then(result => {
         if (result.data) {
