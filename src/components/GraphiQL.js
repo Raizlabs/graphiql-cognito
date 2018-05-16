@@ -34,6 +34,10 @@ import {
   introspectionQuerySansSubscriptions,
 } from '../utility/introspectionQueries';
 
+import fetcher from '../utility/graphQLFetcher';
+
+import { Auth } from 'aws-amplify';
+
 const DEFAULT_DOC_EXPLORER_WIDTH = 350;
 
 /**
@@ -44,7 +48,6 @@ const DEFAULT_DOC_EXPLORER_WIDTH = 350;
  */
 export class GraphiQL extends React.Component {
   static propTypes = {
-    fetcher: PropTypes.func.isRequired,
     schema: PropTypes.instanceOf(GraphQLSchema),
     query: PropTypes.string,
     variables: PropTypes.string,
@@ -68,11 +71,6 @@ export class GraphiQL extends React.Component {
 
   constructor(props) {
     super(props);
-
-    // Ensure props are correct
-    if (typeof props.fetcher !== 'function') {
-      throw new TypeError('GraphiQL requires a fetcher function.');
-    }
 
     // Cache the storage instance
     this._storage = new StorageAPI(props.storage);
@@ -144,6 +142,12 @@ export class GraphiQL extends React.Component {
     this.codeMirrorSizer = new CodeMirrorSizer();
 
     global.g = this;
+
+    (async () => {
+      const session = await Auth.currentSession();
+      const token = session.idToken.jwtToken;
+      console.log(token);
+    })();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -185,15 +189,6 @@ export class GraphiQL extends React.Component {
 
         this.setState(updatedQueryAttributes);
       }
-    }
-
-    // If schema is not supplied via props and the fetcher changed, then
-    // remove the schema so fetchSchema() will be called with the new fetcher.
-    if (
-      nextProps.schema === undefined &&
-      nextProps.fetcher !== this.props.fetcher
-    ) {
-      nextSchema = undefined;
     }
 
     this.setState(
@@ -474,8 +469,7 @@ export class GraphiQL extends React.Component {
   // Private methods
 
   _fetchSchema() {
-    const fetcher = this.props.fetcher;
-
+    debugger;
     const fetch = observableToPromise(fetcher({ query: introspectionQuery }));
     if (!isPromise(fetch)) {
       this.setState({
@@ -536,7 +530,6 @@ export class GraphiQL extends React.Component {
   }
 
   _fetchQuery(query, variables, operationName, cb) {
-    const fetcher = this.props.fetcher;
     let jsonVariables = null;
 
     try {
