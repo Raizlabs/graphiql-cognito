@@ -36,8 +36,6 @@ import {
 
 import { fetcher } from '../utility/graphQLFetcher';
 
-import { Auth } from 'aws-amplify';
-
 const DEFAULT_DOC_EXPLORER_WIDTH = 350;
 
 /**
@@ -470,6 +468,7 @@ export class GraphiQL extends React.Component {
       });
       return;
     }
+
     fetch
       .then(result => {
         if (result.data) {
